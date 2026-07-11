@@ -2,12 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>poll-it.live — Real-time audience polling</title>
+    <meta name="description" content="Spin up a live poll in seconds. Put a join code on the big screen, and watch votes land in real time. No installs — the room votes from their phones." />
+    <link rel="canonical" href="https://poll-it.live/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://poll-it.live/" />
+    <meta property="og:title" content="poll-it.live — Real-time audience polling" />
+    <meta property="og:description" content="Spin up a live poll in seconds. Put a join code on the big screen, and watch votes land in real time. No installs — the room votes from their phones." />
+    <meta property="og:site_name" content="poll-it.live" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="poll-it.live — Real-time audience polling" />
+    <meta name="twitter:description" content="Spin up a live poll in seconds. No installs — the room votes from their phones." />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Fonts: swap to non-blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" /></noscript>
+
+    <!-- JSON-LD structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "poll-it.live",
+      "url": "https://poll-it.live",
+      "description": "Real-time audience polling for live events. Create polls, share a join code, and watch votes land in real time.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "poll-it.live"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

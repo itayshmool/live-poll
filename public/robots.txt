@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://poll-it.live/sitemap.xml

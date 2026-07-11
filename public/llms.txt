@@ -1,0 +1,54 @@
+# poll-it.live
+
+> Real-time audience polling for live events, meetings, and presentations.
+
+## What it does
+
+poll-it.live lets a host create a poll session, add questions (multiple choice, true/false, or 1-5 scale), and present results live on a big screen. Audience members vote from their phones by entering a six-letter join code — no app install, no login required.
+
+## How it works
+
+1. Host signs in and creates a session with a title.
+2. Host adds questions with answer options.
+3. Host goes live — a join code and QR code appear on the presenter screen.
+4. Audience opens poll-it.live on their phone, enters the code, and votes.
+5. Results update in real time as votes land.
+6. Host steps through questions and ends the session when done.
+7. A results summary page shows all questions with final vote tallies.
+
+## Key features
+
+- Sub-second vote latency (1.5s polling interval)
+- QR code + six-letter join code for instant audience access
+- Presenter view optimized for projectors (large type, high contrast)
+- Mobile-first voter experience (no install, no login)
+- Three question types: multiple choice, true/false, 1-5 scale
+- Session lifecycle: draft → live → ended (with reset capability)
+- Results page with per-question vote breakdown
+
+## Technical stack
+
+- React 19 single-page app with hash-based routing
+- Wix Headless platform (Wix SDK + Wix Data collections)
+- Wix OAuth for host authentication (PKCE, fragment response mode)
+- Deployed to Wix CDN via @wix/cli
+- Custom domain: poll-it.live
+
+## URLs
+
+- Landing page: https://poll-it.live/
+- Join a poll: https://poll-it.live/#/join/{CODE}
+- Presenter view: https://poll-it.live/#/present/{CODE}
+- Session editor: https://poll-it.live/#/session/{ID}
+- Results: https://poll-it.live/#/results/{CODE}
+
+## API
+
+poll-it.live uses the Wix Data REST API. Data is stored in three collections:
+- PollSessions: title, code, status (draft/live/ended), activeQuestionId
+- PollQuestions: sessionId, prompt, type (tf/mc/scale), options (JSON array), order
+- PollVotes: sessionId, questionId, choice, voterId
+
+## Contact
+
+Built by Itay Shmool — https://www.linkedin.com/in/itayshmool/
