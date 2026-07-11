@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { navigate } from '../lib/nav.js'
-import { createSession, isConfigured, listSessions } from '../wixData.js'
+import { createSession, isConfigured, listSessions, logout } from '../wixData.js'
 import { makeJoinCode, STATUS } from '../lib/poll.js'
+import Logo from '../components/Logo.jsx'
 
 export default function Admin() {
   const [sessions, setSessions] = useState([])
@@ -46,70 +47,102 @@ export default function Admin() {
   }
 
   return (
-    <div className="app-shell stack">
-      <header className="row" style={{ justifyContent: 'space-between' }}>
+    <>
+      <div className="top-bar">
         <div className="brand">
-          Live <span>Poll</span>
-        </div>
-        <p className="muted" style={{ margin: 0 }}>
-          Host sessions · share a join link · present live
-        </p>
-      </header>
-
-      {!isConfigured() && (
-        <div className="card error">
-          Wix client ID not configured yet.
-        </div>
-      )}
-
-      <section className="card stack">
-        <h2 style={{ margin: 0, fontFamily: 'var(--display)' }}>New session</h2>
-        <form className="row" onSubmit={onCreate}>
-          <div className="field" style={{ flex: 1, minWidth: 220 }}>
-            <label htmlFor="title">Session title</label>
-            <input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. HUNTER Human Premium Zone"
-              required
-            />
+          <Logo />
+          <div>
+            <div className="brand-text">Live Poll</div>
+            <div className="brand-sub">Real-time audience polling</div>
           </div>
-          <button className="btn" type="submit" disabled={creating} style={{ alignSelf: 'end' }}>
-            {creating ? 'Creating…' : 'Create'}
-          </button>
-        </form>
-        {error && <p className="error">{error}</p>}
-      </section>
+        </div>
+        <div className="row">
+          <button className="btn secondary" type="button" onClick={logout}>Sign out</button>
+          <div className="avatar">HP</div>
+        </div>
+      </div>
 
-      <section className="card">
-        <h2 style={{ marginTop: 0, fontFamily: 'var(--display)' }}>Your sessions</h2>
-        {loading && <p className="muted">Loading…</p>}
-        {!loading && sessions.length === 0 && (
-          <p className="empty">No sessions yet. Create one above.</p>
+      <div className="app-shell stack" style={{ gap: '28px' }}>
+        {!isConfigured() && (
+          <div className="card error">Wix client ID not configured yet.</div>
         )}
+
+        <div className="card">
+          <div className="card-header">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2.2"><path d="M12 5v14M5 12h14" /></svg>
+            <span className="card-title">New session</span>
+          </div>
+          <form style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }} onSubmit={onCreate}>
+            <div className="field" style={{ flex: 1, minWidth: 220 }}>
+              <label htmlFor="title">Session title</label>
+              <input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Q3 All-Hands 2026"
+                required
+              />
+            </div>
+            <button className="btn" type="submit" disabled={creating}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M12 5v14M5 12h14" /></svg>
+              {creating ? 'Creating…' : 'Create session'}
+            </button>
+          </form>
+          {error && <p className="error" style={{ marginTop: 12 }}>{error}</p>}
+        </div>
+
         <div>
-          {sessions.map((s) => (
-            <div className="list-item" key={s.id}>
-              <div>
-                <div style={{ fontWeight: 600 }}>{s.title}</div>
-                <div className="muted" style={{ fontSize: '0.9rem' }}>
-                  Code <strong>{s.code}</strong>
+          <div className="row" style={{ marginBottom: 16 }}>
+            <h2 style={{ font: '800 22px/1 var(--font)', letterSpacing: '-0.02em', margin: 0 }}>Your sessions</h2>
+            {!loading && <span className="count-badge">{sessions.length}</span>}
+          </div>
+
+          {loading && <p className="muted">Loading…</p>}
+
+          {!loading && sessions.length === 0 && (
+            <div className="card empty">
+              <div className="empty-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="1.8"><path d="M18 20V10M12 20V4M6 20v-6" /></svg>
+              </div>
+              <h3>No sessions yet</h3>
+              <p>Create your first poll session above. Give it a title, add questions, and share the join code with your audience.</p>
+            </div>
+          )}
+
+          <div className="stack" style={{ gap: 12 }}>
+            {sessions.map((s) => (
+              <div className={`session-card ${s.status === 'ended' ? 'ended' : ''}`} key={s.id}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="row" style={{ marginBottom: 8 }}>
+                    <span className="session-title">{s.title}</span>
+                    <span className={`badge ${s.status || STATUS.draft}`}>
+                      {s.status === 'live' && <span className="pulse-dot" />}
+                      {s.status || 'draft'}
+                    </span>
+                  </div>
+                  <div className="session-meta">
+                    {s.status === 'live' ? 'In progress' : s.status === 'ended' ? 'Session ended' : 'Not started'}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-start' }}>
+                  <span className="join-code-label">Join code</span>
+                  <span className="join-code-value">{s.code}</span>
+                </div>
+                <div className="row">
+                  <button className="btn secondary" type="button" onClick={() => navigate(`/session/${s.id}`)}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4v16h16v-7" /><path d="m14.5 3.5 6 6L11 19l-4 1 1-4z" /></svg>
+                    Edit
+                  </button>
+                  <button className="btn" type="button" onClick={() => navigate(`/present/${s.code}`)}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor" stroke="none" /></svg>
+                    Present
+                  </button>
                 </div>
               </div>
-              <div className="row">
-                <span className={`badge ${s.status || STATUS.draft}`}>{s.status || 'draft'}</span>
-                <button className="btn secondary" type="button" onClick={() => navigate(`/session/${s.id}`)}>
-                  Edit
-                </button>
-                <button className="btn ghost" type="button" onClick={() => navigate(`/present/${s.code}`)}>
-                  Present
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </>
   )
 }

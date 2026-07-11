@@ -2,17 +2,56 @@ import { createClient, OAuthStrategy } from '@wix/sdk'
 import { items } from '@wix/data'
 import { COLLECTIONS } from './lib/poll.js'
 
-/**
- * OAuth client ID is injected after `npm create @wix/new@latest init`
- * from wix.config.json → appId. Placeholder until init completes.
- */
 export const APP_ID =
   import.meta.env.VITE_WIX_CLIENT_ID || 'c1bb4d65-9259-4436-a536-ee37c6c0f9c0'
 
+const TOKENS_KEY = 'wix_member_tokens'
+
+function loadTokens() {
+  try {
+    const raw = localStorage.getItem(TOKENS_KEY)
+    return raw ? JSON.parse(raw) : undefined
+  } catch {
+    return undefined
+  }
+}
+
 const wix = createClient({
   modules: { items },
-  auth: OAuthStrategy({ clientId: APP_ID }),
+  auth: OAuthStrategy({ clientId: APP_ID, tokens: loadTokens() }),
 })
+
+export function isLoggedIn() {
+  return wix.auth.loggedIn()
+}
+
+export async function login() {
+  const redirectUri = window.location.origin
+  const oauthData = wix.auth.generateOAuthData(redirectUri)
+  sessionStorage.setItem('wix_oauth_data', JSON.stringify(oauthData))
+  const { authUrl } = await wix.auth.getAuthUrl(oauthData)
+  window.location.href = authUrl
+}
+
+export async function handleOAuthCallback() {
+  const { code, state } = wix.auth.parseFromUrl()
+  if (!code || !state) return false
+  const raw = sessionStorage.getItem('wix_oauth_data')
+  if (!raw) return false
+  const oauthData = JSON.parse(raw)
+  const tokens = await wix.auth.getMemberTokens(code, state, oauthData)
+  wix.auth.setTokens(tokens)
+  localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens))
+  sessionStorage.removeItem('wix_oauth_data')
+  window.history.replaceState({}, '', window.location.pathname)
+  return true
+}
+
+export function logout() {
+  localStorage.removeItem(TOKENS_KEY)
+  wix.auth.logout(window.location.origin)
+  window.location.reload()
+}
 
 function mapItem(item) {
   if (!item) return null
