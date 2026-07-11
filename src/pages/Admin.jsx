@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { navigate } from '../lib/nav.js'
-import { createSession, isConfigured, listSessions, logout } from '../wixData.js'
+import { createSession, deleteSessionWithData, isConfigured, listSessions, logout } from '../wixData.js'
 import { makeJoinCode, STATUS } from '../lib/poll.js'
 import Logo from '../components/Logo.jsx'
 
@@ -26,6 +26,17 @@ export default function Admin() {
   useEffect(() => {
     refresh()
   }, [])
+
+  async function onDelete(session) {
+    if (!confirm(`Delete "${session.title}" and all its data? This cannot be undone.`)) return
+    setError('')
+    try {
+      await deleteSessionWithData(session.id)
+      await refresh()
+    } catch (err) {
+      setError(err?.message || 'Could not delete session')
+    }
+  }
 
   async function onCreate(e) {
     e.preventDefault()
@@ -136,6 +147,9 @@ export default function Admin() {
                   <button className="btn" type="button" onClick={() => navigate(`/present/${s.code}`)}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor" stroke="none" /></svg>
                     Present
+                  </button>
+                  <button className="btn-icon danger" type="button" onClick={() => onDelete(s)} title="Delete session">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /></svg>
                   </button>
                 </div>
               </div>

@@ -57,6 +57,8 @@ export default function Presenter({ code }) {
     return () => clearInterval(t)
   }, [refresh])
 
+  const isLastQuestion = activeIndex >= 0 && activeIndex === questions.length - 1
+
   async function go(delta) {
     if (!session || !questions.length) return
     const currentIdx = Math.max(0, questions.findIndex((q) => q.id === (session.activeQuestionId || questions[0]?.id)))
@@ -71,6 +73,12 @@ export default function Presenter({ code }) {
     setSession(updated)
     const v = await listVotes(session.id, next.id)
     setVotes(v)
+  }
+
+  async function done() {
+    if (!session) return
+    await updateSession({ ...session, status: 'ended', activeQuestionId: '' })
+    navigate(`/results/${code}`)
   }
 
   if (!session) {
@@ -153,10 +161,17 @@ export default function Presenter({ code }) {
           Previous
         </button>
         <span className="status-text">{votes.length} responses · updating live</span>
-        <button className="btn" type="button" onClick={() => go(1)} disabled={!active}>
-          Next
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="m9 18 6-6-6-6" /></svg>
-        </button>
+        {isLastQuestion ? (
+          <button className="btn" type="button" onClick={done}>
+            Done
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M20 6 9 17l-5-5" /></svg>
+          </button>
+        ) : (
+          <button className="btn" type="button" onClick={() => go(1)} disabled={!active}>
+            Next
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="m9 18 6-6-6-6" /></svg>
+          </button>
+        )}
       </div>
     </div>
   )
