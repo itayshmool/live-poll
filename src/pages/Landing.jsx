@@ -221,6 +221,50 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* SDK / Agent section */}
+      <section className="landing-section">
+        <div className="landing-sdk">
+          <div className="landing-sdk-text">
+            <div className="landing-section-label">For coding agents</div>
+            <h2 className="landing-sdk-title">Create polls from code</h2>
+            <p className="landing-sdk-desc">
+              Build polls programmatically with the Wix Data REST API. Feed this skill file to your coding agent and let it create sessions, add questions, go live, and read results — all without touching the UI.
+            </p>
+            <a href="/poll-it-skill.md" download="poll-it-skill.md" className="landing-sdk-download">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+              Download poll-it-skill.md
+            </a>
+          </div>
+          <div className="landing-sdk-preview">
+            <div className="landing-sdk-window">
+              <div className="landing-sdk-dots">
+                <span /><span /><span />
+              </div>
+              <pre className="landing-sdk-code">{`# 1. Create a session
+curl -X POST wixapis.com/wix-data/v2/items \\
+  -d '{"dataCollectionId": "PollSessions",
+       "dataItem": {"data": {
+         "title": "Team Retro",
+         "code": "RET3QA",
+         "status": "draft"
+       }}}'
+
+# 2. Add a question
+curl -X POST wixapis.com/wix-data/v2/items \\
+  -d '{"dataCollectionId": "PollQuestions",
+       "dataItem": {"data": {
+         "prompt": "How was the sprint?",
+         "type": "scale",
+         "options": "[\\"1\\",\\"2\\",\\"3\\",\\"4\\",\\"5\\"]"
+       }}}'
+
+# 3. Go live → share the join link
+# https://poll-it.live/#/join/RET3QA`}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA band */}
       <section className="landing-section">
         <div className="landing-cta-band">
