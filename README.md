@@ -1,26 +1,33 @@
-# Live Poll
+# poll-it.live
 
-Anonymous live audience polls for talks and workshops. Host authors questions, shares a join link/QR, and presents live results on stage.
+Real-time audience polling for talks, workshops, and live events.
 
-Built with **Vite + React** and **Wix Headless** (Wix Data).
-
-**Live:** https://live-poll-7eb30789-itayshmool.wix-site-host.com
+**Live at [poll-it.live](https://poll-it.live)**
 
 ---
 
 ## What it does
 
-| Screen | Route | Who |
-|--------|-------|-----|
-| Admin | `/#/` | Host — create & list sessions |
-| Editor | `/#/session/:id` | Host — add questions, go live, copy link/QR |
-| Presenter | `/#/present/:code` | Host — dark stage UI, live bars, next/prev |
-| Join | `/#/join/:code` | Audience — answer on phone, then wait |
+A host creates a poll session, adds questions, and presents results on a big screen. The audience votes from their phones by entering a six-letter join code — no app install, no sign-up.
 
-- No login for attendees (anonymous)
-- One answer per question (no edit)
-- Results update every ~1.5s via polling (no WebSockets)
-- Question types: **True/False**, **Multiple choice**, **Scale** (1–N + optional “I don’t know”)
+| Screen | Route | Who |
+|---|---|---|
+| Landing | `/#/` | Public homepage |
+| Admin | `/#/admin` | Host — create & manage sessions |
+| Editor | `/#/session/:id` | Host — add questions, go live, share QR |
+| Presenter | `/#/present/:code` | Host — full-screen results for projectors |
+| Join | `/#/join/:code` | Audience — vote from any phone |
+| Results | `/#/results/:code` | Anyone — final vote breakdown |
+
+### Features
+
+- Three question types: multiple choice, true/false, 1-5 scale
+- Voters can change their answer while a question is live
+- QR code + six-letter join code for instant audience access
+- Presenter view built for projectors (large type, high contrast)
+- Results update via 3s polling with smart deduplication
+- Session lifecycle: draft &rarr; live &rarr; ended (with reset-to-draft)
+- No login required for voters (identity via localStorage random ID)
 
 ---
 
@@ -28,69 +35,80 @@ Built with **Vite + React** and **Wix Headless** (Wix Data).
 
 ```bash
 npm install
-cp .env.example .env   # or use existing .env from Wix init
-npm run dev
+cp .env.example .env          # add your Wix client ID
+npm run dev                    # http://localhost:5173
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`).
-
-### Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Local dev server |
-| `npm run build` | Production build → `dist/` |
-| `npm run preview` | Preview the production build |
-| `npx @wix/cli@latest release` | Publish `dist/` to Wix hosting |
+| Command | What it does |
+|---|---|
+| `npm run dev` | Vite dev server with HMR |
+| `npm run build` | Production build &rarr; `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm test` | Run Vitest test suite |
+| `npx @wix/cli release` | Publish to Wix CDN |
 
 ---
 
-## Wix setup
+## Tech stack
 
-This project is already connected to a Wix Headless site (`wix.config.json`).
-
-| Field | Value |
-|-------|--------|
-| Client ID | `VITE_WIX_CLIENT_ID` in `.env` (from `wix.config.json` → `appId`) |
-| Site ID | in `wix.config.json` |
+- **React 19** single-page app (Vite)
+- **Wix Headless** &mdash; [Wix SDK](https://dev.wix.com/docs/sdk) + Wix Data collections for storage
+- **Wix OAuth** (PKCE) for host authentication
+- Hash-based routing (no server-side rewrites needed)
+- Deployed to Wix CDN with custom domain via `@wix/cli`
 
 ### Data collections
 
 | Collection | Purpose |
-|------------|---------|
-| `PollSessions` | Session title, join code, status (`draft` / `live` / `ended`), active question |
-| `PollQuestions` | Prompt, type, options (JSON), order |
-| `PollVotes` | Anonymous votes (`sessionId`, `questionId`, `choice`, `voterId`) |
-
-Permissions are **public read/write** for the single-host MVP (anyone with the admin URL can edit). Tighten later if you open this beyond yourself.
+|---|---|
+| `PollSessions` | Title, join code, status (`draft`/`live`/`ended`), active question pointer |
+| `PollQuestions` | Prompt, type, options (JSON array), display order |
+| `PollVotes` | `sessionId`, `questionId`, `choice`, `voterId` |
 
 ---
 
-## Typical event flow
-
-1. Create a session on Admin and open the Editor  
-2. Add questions (T/F, MC, or scale)  
-3. Click **Go live** and open the Presenter on the projector  
-4. Share the join link / QR with the room  
-5. Advance questions on the Presenter; bars update as people vote  
-6. **End session** when done — data stays for review  
-
----
-
-## Project layout
+## Project structure
 
 ```
 src/
-  pages/       Admin, Editor, Presenter, Join
-  lib/         Poll helpers + hash navigation
-  wixData.js   @wix/sdk + @wix/data API layer
-  index.css    Dark stage-friendly UI
+  pages/          Landing, Admin, Editor, Presenter, Join, Results, Login
+  components/     Logo
+  lib/            poll.js (constants), nav.js (hash router)
+  wixData.js      Wix SDK client + all data operations
+  index.css       Full design system (dark theme, stage-friendly)
+public/
+  favicon.svg, icons.svg, robots.txt, sitemap.xml, llms.txt
 ```
 
 ---
 
-## Notes
+## How it works at scale
 
-- Routing uses **hash URLs** (`/#/join/ABC123`) so static Wix hosting works without server rewrites.
-- Attendee identity is a random id in `localStorage` (blocks double votes on the same device).
-- Admin is **not** login-gated in v1.
+Polling is optimized for 100+ concurrent voters:
+
+1. Voter clients poll every 3s (up from 1.5s)
+2. `useRef` tracks the active question ID &mdash; if unchanged, `listQuestions` and `findVote` calls are skipped
+3. Presenter skips `listQuestions` when the active question hasn't changed
+
+This reduces steady-state API calls from ~200/s to ~33/s at 100 voters.
+
+---
+
+## Wix Headless setup
+
+This project is connected to a Wix site via `wix.config.json`. To connect your own:
+
+1. Create a [Wix Headless](https://www.wix.com/studio/headless-website) project
+2. Run `npx @wix/cli init` and select your site
+3. Create the three data collections above with public read/write permissions
+4. `npx @wix/cli env pull` to get your client ID into `.env.local`
+
+---
+
+## License
+
+MIT
+
+---
+
+Built by [Itay Shmool](https://www.linkedin.com/in/itayshmool/)

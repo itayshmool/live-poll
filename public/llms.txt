@@ -18,11 +18,12 @@ poll-it.live lets a host create a poll session, add questions (multiple choice, 
 
 ## Key features
 
-- Sub-second vote latency (1.5s polling interval)
+- Sub-second vote latency (3s polling interval, optimized to skip redundant calls)
 - QR code + six-letter join code for instant audience access
 - Presenter view optimized for projectors (large type, high contrast)
 - Mobile-first voter experience (no install, no login)
 - Three question types: multiple choice, true/false, 1-5 scale
+- Voters can change their answer while a question is still live
 - Session lifecycle: draft → live → ended (with reset capability)
 - Results page with per-question vote breakdown
 
