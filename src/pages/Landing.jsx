@@ -140,6 +140,7 @@ export default function Landing() {
             />
             <button className="landing-nav-join-go" type="submit">Go</button>
           </form>
+          <a href="/poll-it-skill.md" download="poll-it-skill.md" className="btn-text">Download skill</a>
           <button className="btn-text" type="button" onClick={handleSignIn} disabled={signingIn}>Sign in</button>
         </div>
       </nav>
