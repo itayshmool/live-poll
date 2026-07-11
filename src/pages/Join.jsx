@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   castVote,
   findVote,
@@ -8,7 +8,7 @@ import {
 import { getVoterId, parseOptions } from '../lib/poll.js'
 import Logo from '../components/Logo.jsx'
 
-const POLL_MS = 1500
+const POLL_MS = 3000
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 export default function Join({ code }) {
@@ -36,21 +36,29 @@ export default function Join({ code }) {
   const options = useMemo(() => (active ? parseOptions(active.options) : []), [active])
   const waiting = !active || answeredId === active?.id
 
+  const lastActiveRef = useRef(null)
+
   const refresh = useCallback(async () => {
     try {
       const s = await getSessionByCode(code)
       if (!s) { setError('Session not found'); return }
       setSession(s)
+
+      const activeId = s.activeQuestionId || ''
+      if (activeId === lastActiveRef.current) {
+        setError('')
+        return
+      }
+
+      lastActiveRef.current = activeId
       const qs = await listQuestions(s.id)
       setQuestions(qs)
       const current = qs.find((q) => q.id === s.activeQuestionId) || qs[s.activeIndex || 0] || null
       if (current && s.status === 'live') {
         const existing = await findVote(s.id, current.id, voterId)
-        setAnsweredId((prev) => {
-          if (existing) return current.id
-          if (prev === current.id) return prev
-          return ''
-        })
+        setAnsweredId(existing ? current.id : '')
+      } else {
+        setAnsweredId('')
       }
       setError('')
     } catch (err) {

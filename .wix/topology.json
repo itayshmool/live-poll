@@ -1,11 +1,11 @@
 {
   "production": {
-    "id": "14dc849b-f9f7-4593-bbb5-2ed35597a3da",
+    "id": "3f250cf7-7813-4b73-9a03-6438da651ee8",
     "site": {
-      "main": "https://iuddhb-live-poll-7eb30789-itayshmool.wix-site-host.com"
+      "main": "https://hbah70-live-poll-7eb30789-itayshmool.wix-site-host.com"
     },
     "dashboard": {
-      "main": "https://manage.wix.com/dashboard/7c57796f-b08a-49cd-a90b-fb8d7e2df528?apps-override=14dc849b-f9f7-4593-bbb5-2ed35597a3da"
+      "main": "https://manage.wix.com/dashboard/7c57796f-b08a-49cd-a90b-fb8d7e2df528?apps-override=3f250cf7-7813-4b73-9a03-6438da651ee8"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { navigate } from '../lib/nav.js'
 import {
   getSessionByCode,
@@ -31,16 +31,23 @@ export default function Presenter({ code }) {
   const tallies = useMemo(() => tallyVotes(options, votes), [options, votes])
   const maxPct = useMemo(() => Math.max(...tallies.map((t) => t.pct), 0), [tallies])
 
+  const lastActiveRef = useRef(null)
+
   const refresh = useCallback(async () => {
     try {
       const s = await getSessionByCode(code)
       if (!s) { setError('Session not found'); return }
       setSession(s)
-      const qs = await listQuestions(s.id)
-      setQuestions(qs)
-      const current = qs.find((q) => q.id === s.activeQuestionId) || qs[s.activeIndex || 0] || null
-      if (current) {
-        const v = await listVotes(s.id, current.id)
+
+      const activeId = s.activeQuestionId || ''
+      if (activeId !== lastActiveRef.current) {
+        lastActiveRef.current = activeId
+        const qs = await listQuestions(s.id)
+        setQuestions(qs)
+      }
+
+      if (s.activeQuestionId) {
+        const v = await listVotes(s.id, s.activeQuestionId)
         setVotes(v)
       } else {
         setVotes([])
