@@ -29,7 +29,7 @@ poll-it.live lets a host create a poll session, add questions (multiple choice, 
 ## Technical stack
 
 - React 19 single-page app with hash-based routing
-- Wix Headless platform (Wix SDK + Wix Data collections)
+- Wix Headless platform (https://www.wix.com/lp-en/headless) — Wix SDK + Wix Data collections
 - Wix OAuth for host authentication (PKCE, fragment response mode)
 - Deployed to Wix CDN via @wix/cli
 - Custom domain: poll-it.live

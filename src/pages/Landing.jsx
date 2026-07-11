@@ -197,10 +197,10 @@ export default function Landing() {
           <span className="brand-text" style={{ fontSize: 16 }}>poll-it<span style={{ color: 'var(--accent)' }}>.live</span></span>
         </div>
         <div className="landing-footer-right">
-          <span className="landing-powered">
+          <a href="https://www.wix.com/lp-en/headless" target="_blank" rel="noreferrer" className="landing-powered">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2"><path d="M13 2 3 14h9l-1 8 10-12h-9z" /></svg>
             Powered by <span style={{ color: 'var(--text)', fontWeight: 700 }}>Wix Headless</span>
-          </span>
+          </a>
         </div>
       </footer>
     </div>

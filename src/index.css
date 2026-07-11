@@ -1269,6 +1269,13 @@ a {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
   font: 600 12px/1 var(--font);
   color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.landing-powered:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Landing mobile */
