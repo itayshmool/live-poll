@@ -168,7 +168,16 @@ export async function findVote(sessionId, questionId, voterId) {
 
 export async function castVote({ sessionId, questionId, choice, voterId }) {
   const existing = await findVote(sessionId, questionId, voterId)
-  if (existing) return existing
+  if (existing) {
+    if (existing.choice === choice) return existing
+    const { id, ...rest } = existing
+    const updated = await wix.items.update(COLLECTIONS.votes, {
+      _id: id,
+      ...rest,
+      choice,
+    })
+    return mapItem(updated)
+  }
   const created = await wix.items.insert(COLLECTIONS.votes, {
     sessionId,
     questionId,

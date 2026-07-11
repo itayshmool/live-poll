@@ -15,7 +15,7 @@ export default function Join({ code }) {
   const voterId = useMemo(() => getVoterId(), [])
   const [session, setSession] = useState(null)
   const [questions, setQuestions] = useState([])
-  const [answeredId, setAnsweredId] = useState('')
+  const [selectedChoice, setSelectedChoice] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -34,7 +34,6 @@ export default function Join({ code }) {
   }, [active, questions])
 
   const options = useMemo(() => (active ? parseOptions(active.options) : []), [active])
-  const waiting = !active || answeredId === active?.id
 
   const lastActiveRef = useRef(null)
 
@@ -56,9 +55,9 @@ export default function Join({ code }) {
       const current = qs.find((q) => q.id === s.activeQuestionId) || qs[s.activeIndex || 0] || null
       if (current && s.status === 'live') {
         const existing = await findVote(s.id, current.id, voterId)
-        setAnsweredId(existing ? current.id : '')
+        setSelectedChoice(existing ? existing.choice : '')
       } else {
-        setAnsweredId('')
+        setSelectedChoice('')
       }
       setError('')
     } catch (err) {
@@ -72,14 +71,8 @@ export default function Join({ code }) {
     return () => clearInterval(t)
   }, [refresh])
 
-  useEffect(() => {
-    if (active && answeredId && answeredId !== active.id) {
-      setAnsweredId('')
-    }
-  }, [active, answeredId])
-
   async function onChoose(choice) {
-    if (!session || !active || submitting || answeredId === active.id) return
+    if (!session || !active || submitting || choice === selectedChoice) return
     setSubmitting(true)
     setError('')
     try {
@@ -89,7 +82,7 @@ export default function Join({ code }) {
         choice,
         voterId,
       })
-      setAnsweredId(active.id)
+      setSelectedChoice(choice)
     } catch (err) {
       setError(err?.message || 'Could not submit vote')
     } finally {
@@ -132,21 +125,7 @@ export default function Join({ code }) {
           </div>
         )}
 
-        {session && session.status === 'live' && waiting && (
-          <div className="waiting">
-            <div className="icon-circle green">
-              <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>
-            </div>
-            <div className="status-label" style={{ color: 'var(--live)', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', animation: 'lpPulseY 1.8s ease-out infinite' }} />
-              Answer locked in
-            </div>
-            <h1>Your answer is in</h1>
-            <p>Waiting for the host to move to the next question.</p>
-          </div>
-        )}
-
-        {session && session.status === 'live' && active && answeredId !== active.id && (
+        {session && session.status === 'live' && active && (
           <>
             <div style={{ font: '700 11px/1 var(--mono)', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.16em', marginBottom: 12 }}>
               Question {activeIndex + 1} of {questions.length}
@@ -158,17 +137,22 @@ export default function Join({ code }) {
               {options.map((opt, i) => (
                 <button
                   key={opt}
-                  className="choice"
+                  className={`choice${selectedChoice === opt ? ' selected' : ''}`}
                   type="button"
                   disabled={submitting}
                   onClick={() => onChoose(opt)}
                 >
                   <span className="choice-letter">{LETTERS[i] || i + 1}</span>
                   {opt}
+                  {selectedChoice === opt && (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.6" style={{ marginLeft: 'auto', flexShrink: 0 }}><path d="M20 6 9 17l-5-5" /></svg>
+                  )}
                 </button>
               ))}
             </div>
-            <div className="join-footer">Tap an option to lock in your vote</div>
+            <div className="join-footer">
+              {selectedChoice ? 'Tap another option to change your vote' : 'Tap an option to vote'}
+            </div>
           </>
         )}
 
