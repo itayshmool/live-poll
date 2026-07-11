@@ -950,6 +950,10 @@ a {
   color: rgba(255, 255, 255, 0.8);
   font: 600 13px/1 var(--font);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
 }
 
 /* Hero */
