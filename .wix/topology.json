@@ -1,0 +1,11 @@
+{
+  "production": {
+    "id": "a6eca6f3-3b77-4261-9e4e-6189bae1d29f",
+    "site": {
+      "main": "https://xprhqv-live-poll-7eb30789-itayshmool.wix-site-host.com"
+    },
+    "dashboard": {
+      "main": "https://manage.wix.com/dashboard/7c57796f-b08a-49cd-a90b-fb8d7e2df528?apps-override=a6eca6f3-3b77-4261-9e4e-6189bae1d29f"
+    }
+  }
+}

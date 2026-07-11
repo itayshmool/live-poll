@@ -1,0 +1,12 @@
+{
+  "brand": {
+    "name": "Live Poll",
+    "description": "Anonymous live audience polls for stage talks — host-authored questions, presenter screen, mobile join."
+  },
+  "frontend": "custom",
+  "verticals": [
+    "cms"
+  ],
+  "siteId": "7c57796f-b08a-49cd-a90b-fb8d7e2df528",
+  "appId": "c1bb4d65-9259-4436-a536-ee37c6c0f9c0"
+}
