@@ -105,6 +105,12 @@ export async function deleteSession(id) {
   await wix.items.remove(COLLECTIONS.sessions, id)
 }
 
+export async function deleteAllVotes(sessionId) {
+  const votes = await listVotes(sessionId)
+  await Promise.all(votes.map((v) => wix.items.remove(COLLECTIONS.votes, v.id)))
+  return votes.length
+}
+
 export async function deleteSessionWithData(id) {
   const [questions, votes] = await Promise.all([listQuestions(id), listVotes(id)])
   await Promise.all([

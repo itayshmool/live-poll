@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { navigate } from '../lib/nav.js'
 import {
   createQuestion,
+  deleteAllVotes,
   deleteQuestion,
   deleteSessionWithData,
   getSessionById,
@@ -50,8 +51,12 @@ export default function Editor({ id }) {
 
   async function setStatus(status) {
     if (!session) return
+    if (status === STATUS.draft && !confirm('Reset to draft? This will clear all votes.')) return
     setSaving(true)
     try {
+      if (status === STATUS.draft) {
+        await deleteAllVotes(session.id)
+      }
       const patch = { ...session, status }
       if (status === STATUS.live && questions[0]) {
         patch.activeIndex = 0
