@@ -1,11 +1,11 @@
 {
   "production": {
-    "id": "2897d00b-554e-45d1-97d7-3455f6c3b4c6",
+    "id": "a7d44e6f-0ad6-46ac-8a73-e079c7f1ba06",
     "site": {
-      "main": "https://q60cu6-live-poll-7eb30789-itayshmool.wix-site-host.com"
+      "main": "https://t49b0q-live-poll-7eb30789-itayshmool.wix-site-host.com"
     },
     "dashboard": {
-      "main": "https://manage.wix.com/dashboard/7c57796f-b08a-49cd-a90b-fb8d7e2df528?apps-override=2897d00b-554e-45d1-97d7-3455f6c3b4c6"
+      "main": "https://manage.wix.com/dashboard/7c57796f-b08a-49cd-a90b-fb8d7e2df528?apps-override=a7d44e6f-0ad6-46ac-8a73-e079c7f1ba06"
     }
   }
 }
